@@ -6,6 +6,7 @@ import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
 import * as Regatta from './regatta.js';
 import { ALLURES, TRIM_OPTIONS } from './sailing.js';
 import { boatArtMarkup } from './boat-art.js';
+import { sailTierName, crewTierName, equipmentTierName } from './upgrade-tiers.js';
 
 const els = {
   gold: document.getElementById('gold'),
@@ -20,15 +21,15 @@ const els = {
   boostHint: document.getElementById('boost-hint'),
   activeBoatName: document.getElementById('active-boat-name'),
 
-  sailLevel: document.getElementById('sail-level'),
+  sailTier: document.getElementById('sail-tier'),
   sailCost: document.getElementById('sail-cost'),
   buySail: document.getElementById('buy-sail'),
 
-  electronicsLevel: document.getElementById('electronics-level'),
+  electronicsTier: document.getElementById('electronics-tier'),
   electronicsCost: document.getElementById('electronics-cost'),
   buyElectronics: document.getElementById('buy-electronics'),
 
-  crewLevel: document.getElementById('crew-level'),
+  crewTier: document.getElementById('crew-tier'),
   crewCost: document.getElementById('crew-cost'),
   buyCrew: document.getElementById('buy-crew'),
 
@@ -316,7 +317,7 @@ function showRegattaResults(result) {
     <div class="regatta-result-headline">${result.rank === 1 ? '🏆 Victoire !' : `${result.rank}e place sur ${result.totalRacers}`}</div>
     <div class="regatta-standings">${standings}</div>
     <div class="regatta-trim-feedback">${trimFeedback}</div>
-    <div class="regatta-reward">+${formatNumber(result.goldReward)} or${result.gemsReward ? ` · +${result.gemsReward} 💎` : ''}</div>
+    <div class="regatta-reward">+${formatNumber(result.goldReward)} $$$${result.gemsReward ? ` · +${result.gemsReward} 💎` : ''}</div>
     <button class="regatta-start-btn" id="regatta-again-btn">Retour</button>
   `;
 
@@ -372,17 +373,17 @@ export function render(state, now) {
   }
 
   const sailCost = Game.sailCost(activeBoat, upgrades.sailLevel);
-  els.sailLevel.textContent = upgrades.sailLevel;
+  els.sailTier.textContent = sailTierName(upgrades.sailLevel);
   els.sailCost.textContent = formatNumber(sailCost);
   els.buySail.disabled = state.gold < sailCost;
 
   const electronicsCost = Game.electronicsCost(activeBoat, upgrades.electronicsLevel);
-  els.electronicsLevel.textContent = upgrades.electronicsLevel;
+  els.electronicsTier.textContent = equipmentTierName(upgrades.electronicsLevel);
   els.electronicsCost.textContent = formatNumber(electronicsCost);
   els.buyElectronics.disabled = state.gold < electronicsCost;
 
   const crewCost = Game.crewCost(activeBoat, upgrades.crewLevel);
-  els.crewLevel.textContent = upgrades.crewLevel;
+  els.crewTier.textContent = crewTierName(upgrades.crewLevel);
   els.crewCost.textContent = formatNumber(crewCost);
   els.buyCrew.disabled = state.gold < crewCost;
 

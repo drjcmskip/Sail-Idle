@@ -17,7 +17,7 @@
   <div id="app">
     <header class="topbar">
       <div class="stat">
-        <span class="stat-label">Or</span>
+        <span class="stat-label">$$$</span>
         <span class="stat-value" id="gold">0</span>
       </div>
       <div class="stat">
@@ -50,19 +50,22 @@
         <div class="active-boat-name" id="active-boat-name">Optimist Club</div>
         <div class="upgrades">
           <button class="upgrade-card" id="buy-sail">
-            <div class="upgrade-title">Voiles <span id="sail-level">1</span></div>
+            <div class="upgrade-title">Voiles</div>
+            <div class="upgrade-tier" id="sail-tier">Coton</div>
             <div class="upgrade-desc">+vitesse</div>
-            <div class="upgrade-cost"><span id="sail-cost">0</span> or</div>
+            <div class="upgrade-cost"><span id="sail-cost">0</span> $$$</div>
           </button>
           <button class="upgrade-card" id="buy-electronics">
-            <div class="upgrade-title">Électronique <span id="electronics-level">1</span></div>
-            <div class="upgrade-desc">+gains d'or</div>
-            <div class="upgrade-cost"><span id="electronics-cost">0</span> or</div>
+            <div class="upgrade-title">Équipement</div>
+            <div class="upgrade-tier" id="electronics-tier">Poulies</div>
+            <div class="upgrade-desc">+gains</div>
+            <div class="upgrade-cost"><span id="electronics-cost">0</span> $$$</div>
           </button>
           <button class="upgrade-card" id="buy-crew">
-            <div class="upgrade-title">Équipage <span id="crew-level">0</span></div>
-            <div class="upgrade-desc">+vitesse &amp; or</div>
-            <div class="upgrade-cost"><span id="crew-cost">0</span> or</div>
+            <div class="upgrade-title">Équipage</div>
+            <div class="upgrade-tier" id="crew-tier">Mousse</div>
+            <div class="upgrade-desc">+vitesse &amp; gains</div>
+            <div class="upgrade-cost"><span id="crew-cost">0</span> $$$</div>
           </button>
         </div>
       </section>
@@ -85,7 +88,7 @@
 
       <div class="danger-zone">
         <button class="reset-btn" id="reset-btn">Réinitialiser la partie</button>
-        <p class="reset-hint">Efface toute votre progression (flotte, or, réputation). Irréversible.</p>
+        <p class="reset-hint">Efface toute votre progression (flotte, $$$, réputation). Irréversible.</p>
       </div>
     </div>
 

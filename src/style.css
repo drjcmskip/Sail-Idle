@@ -277,6 +277,12 @@ body {
   font-weight: 700;
 }
 
+.upgrade-tier {
+  font-size: 12px;
+  color: var(--accent-soft);
+  font-weight: 600;
+}
+
 .upgrade-desc {
   font-size: 11px;
   color: var(--text-dim);

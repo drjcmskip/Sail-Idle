@@ -102,7 +102,7 @@ UI.bindActions({
     UI.playRegatta(result);
   },
   onReset: () => {
-    if (!window.confirm('Réinitialiser toute votre progression (flotte, or, réputation) ? Cette action est irréversible.')) return;
+    if (!window.confirm('Réinitialiser toute votre progression (flotte, $$$, réputation) ? Cette action est irréversible.')) return;
     resetting = true;
     resetState();
     window.location.reload();
