@@ -2,6 +2,7 @@ import { formatNumber } from './format.js';
 import * as Game from './game.js';
 import { BOAT_CLASSES, getBoat, getBoatsByClass, isClassUnlocked } from './boats.js';
 import { GEM_PACKS } from './shop.js';
+import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
 
 const els = {
   gold: document.getElementById('gold'),
@@ -147,12 +148,13 @@ function renderGarage(state, force = false) {
 function renderShopOnce(onBuyGemPack) {
   els.shopList.innerHTML = '';
   for (const pack of GEM_PACKS) {
+    const configured = Boolean(STRIPE_PAYMENT_LINKS[pack.id]);
     const card = document.createElement('div');
     card.className = 'shop-card';
     card.innerHTML = `
       <div class="shop-card-gems">💎 ${formatNumber(pack.gems)}</div>
       ${pack.bonusLabel ? `<div class="shop-card-bonus">${pack.bonusLabel}</div>` : ''}
-      <button class="shop-card-btn" data-pack="${pack.id}" disabled>Bientôt disponible</button>
+      <button class="shop-card-btn" data-pack="${pack.id}" ${configured ? '' : 'disabled'}>${configured ? 'Acheter' : 'Bientôt disponible'}</button>
       <div class="shop-card-price">${pack.priceLabel}</div>
     `;
     els.shopList.appendChild(card);

@@ -2,13 +2,41 @@ import { loadState, saveState } from './state.js';
 import * as Game from './game.js';
 import * as UI from './ui.js';
 import { formatDuration } from './format.js';
+import { GEM_PACKS } from './shop.js';
+import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
 
 const state = loadState();
+
+if (!state.playerId) {
+  state.playerId = crypto.randomUUID ? crypto.randomUUID() : `p_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
 
 const offlineMs = Game.applyOfflineProgress(state);
 if (offlineMs > 60_000) {
   UI.showToast(`Bienvenue à bord ! Votre équipage a navigué ${formatDuration(offlineMs)} en votre absence.`);
 }
+
+// Handles the redirect back from a Stripe Payment Link (?gem_pack=...&session_id=...).
+// See src/stripe-config.js for why this trusts the URL rather than verifying
+// the payment server-side.
+function handleStripeReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const packId = params.get('gem_pack');
+  const sessionId = params.get('session_id');
+  if (!packId || !sessionId) return;
+
+  history.replaceState({}, '', window.location.pathname);
+
+  if (state.claimedStripeSessions.includes(sessionId)) return;
+  const pack = GEM_PACKS.find((p) => p.id === packId);
+  if (!pack) return;
+
+  state.gems += pack.gems;
+  state.claimedStripeSessions.push(sessionId);
+  saveState(state);
+  UI.showToast(`Merci pour votre achat ! +${pack.gems} gemmes.`);
+}
+handleStripeReturn();
 
 const BUY_BOAT_FAILURE_MESSAGES = {
   locked: 'Cette classe de bateaux est encore verrouillée.',
@@ -42,8 +70,16 @@ UI.bindActions({
   onSelectBoat: (boatId) => {
     if (Game.selectBoat(state, boatId)) saveState(state);
   },
-  onBuyGemPack: () => {
-    UI.showToast("Paiement non configuré pour l'instant — revenez bientôt !");
+  onBuyGemPack: (packId) => {
+    const link = STRIPE_PAYMENT_LINKS[packId];
+    if (!link) {
+      UI.showToast("Paiement non configuré pour l'instant — revenez bientôt !");
+      return;
+    }
+    const url = new URL(link);
+    url.searchParams.set('client_reference_id', state.playerId);
+    saveState(state);
+    window.location.href = url.toString();
   },
 });
 

@@ -17,6 +17,8 @@ export function createDefaultState() {
     boostUntil: 0,
     boostReadyAt: 0,
     lastTick: Date.now(),
+    playerId: null,
+    claimedStripeSessions: [],
   };
 }
 
