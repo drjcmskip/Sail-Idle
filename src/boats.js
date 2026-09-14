@@ -1,70 +1,77 @@
 export const BOAT_CLASSES = [
   {
-    id: 'derive',
-    name: 'Dériveur',
-    description: 'Pour débuter : léger, réactif, sans prétention.',
+    id: 'derive-solo',
+    name: 'Dériveur solitaire',
+    description: 'Petits monotypes en solitaire, pour apprendre puis se muscler.',
     unlockReputation: 0,
+  },
+  {
+    id: 'derive-double',
+    name: 'Dériveur double',
+    description: "Dériveurs à équipage, de l'initiation familiale à l'olympisme.",
+    unlockReputation: 2,
   },
   {
     id: 'catsport',
     name: 'Catamaran de sport',
     description: 'Multicoque léger de plage, rapide et accessible.',
-    unlockReputation: 3,
+    unlockReputation: 5,
   },
   {
     id: 'foilers',
     name: 'Foilers',
     description: 'Petits monocoques volants, la voltige en solitaire.',
-    unlockReputation: 6,
+    unlockReputation: 8,
   },
   {
     id: 'mini650',
     name: 'Mini 6.50',
     description: 'Petit habitable de course au large en solitaire.',
-    unlockReputation: 10,
+    unlockReputation: 12,
   },
   {
     id: 'class40',
     name: 'Class40',
     description: 'Monocoque océanique moderne, robuste et rapide.',
-    unlockReputation: 18,
+    unlockReputation: 20,
   },
   {
     id: 'imoca',
     name: 'IMOCA 60',
     description: 'Monocoque océanique en solitaire, taillé pour le large.',
-    unlockReputation: 27,
+    unlockReputation: 29,
   },
   {
     id: 'ocean50',
     name: 'Ocean 50',
     description: 'Trimaran océanique volant, trois coques et beaucoup de peps.',
-    unlockReputation: 40,
+    unlockReputation: 42,
   },
   {
     id: 'ac75',
     name: 'AC75',
     description: "Foiler de haute performance, style America's Cup.",
-    unlockReputation: 58,
+    unlockReputation: 60,
   },
   {
     id: 'f50',
     name: 'F50 Foiler',
     description: 'Catamaran volant, le sommet de la vitesse en régate.',
-    unlockReputation: 88,
+    unlockReputation: 90,
   },
   {
     id: 'ultim',
     name: 'Ultim',
     description: "Le plus grand trimaran océanique, l'ultime consécration.",
-    unlockReputation: 133,
+    unlockReputation: 135,
   },
 ];
 
 // baseSpeed is calibrated against real recorded/typical speeds (in knots)
 // for each class — see the research notes in past commits for sources:
-// dériveur (470/Laser) ~14-15kn planing, sport catamarans (Hobie 16 to
-// Nacra 17) ~12-27kn, small foiling dinghies (WASZP to A-Class) ~20-31kn,
+// solo/double dinghies (Finn, 470, Flying Dutchman) ~14-15kn planing,
+// sport catamarans (Hobie 16 to Nacra 17) ~12-27kn, small foiling
+// dinghies (WASZP to A-Class) ~20-31kn,
 // Mini 6.50 ~20-23kn stabilized (proto record 31kn), Class40 20-25kn,
 // IMOCA 60 up to 35kn surfing, Ocean Fifty up to ~40kn, AC75 record
 // 55.6kn (INEOS Britannia), F50 record 58.11kn, Ultim ~40kn sustained /
@@ -85,11 +92,17 @@ export const BOAT_CLASSES = [
 // upgradeBase is a flat gold amount decoupled from `price`/`currency` so
 // gem-priced boats still get a sane gold cost for their upgrade ladder.
 export const BOATS = [
-  { id: 'optimist', classId: 'derive', name: 'Optimist', price: 0, currency: 'gold', baseSpeed: 4, goldMultiplier: 1.0, upgradeBase: 40 },
-  { id: '420', classId: 'derive', name: '420', price: 250, currency: 'gold', baseSpeed: 7, goldMultiplier: 1.02, upgradeBase: 50 },
-  { id: 'laser-radial', classId: 'derive', name: 'Laser Radial', price: 600, currency: 'gold', baseSpeed: 9.5, goldMultiplier: 1.05, upgradeBase: 60 },
-  { id: 'laser', classId: 'derive', name: 'Laser Standard', price: 1200, currency: 'gold', baseSpeed: 12, goldMultiplier: 1.075, upgradeBase: 85 },
-  { id: '470', classId: 'derive', name: '470', price: 2400, currency: 'gold', baseSpeed: 14, goldMultiplier: 1.1, upgradeBase: 120 },
+  { id: 'optimist', classId: 'derive-solo', name: 'Optimist', price: 0, currency: 'gold', baseSpeed: 4, goldMultiplier: 1.0, upgradeBase: 40 },
+  { id: 'europe', classId: 'derive-solo', name: 'Europe', price: 300, currency: 'gold', baseSpeed: 8, goldMultiplier: 1.03, upgradeBase: 55 },
+  { id: 'laser-radial', classId: 'derive-solo', name: 'Laser Radial (ILCA 6)', price: 700, currency: 'gold', baseSpeed: 9.5, goldMultiplier: 1.05, upgradeBase: 70 },
+  { id: 'laser', classId: 'derive-solo', name: 'Laser Standard (ILCA 7)', price: 1400, currency: 'gold', baseSpeed: 12, goldMultiplier: 1.08, upgradeBase: 95 },
+  { id: 'finn', classId: 'derive-solo', name: 'Finn', price: 2600, currency: 'gold', baseSpeed: 14, goldMultiplier: 1.11, upgradeBase: 130 },
+
+  { id: 'zef', classId: 'derive-double', name: 'Zef', price: 500, currency: 'gold', baseSpeed: 6, goldMultiplier: 1.02, upgradeBase: 60 },
+  { id: 'vaurien', classId: 'derive-double', name: 'Vaurien', price: 1000, currency: 'gold', baseSpeed: 7.5, goldMultiplier: 1.05, upgradeBase: 90 },
+  { id: '420', classId: 'derive-double', name: '420', price: 1800, currency: 'gold', baseSpeed: 9.5, goldMultiplier: 1.08, upgradeBase: 130 },
+  { id: '470', classId: 'derive-double', name: '470', price: 3200, currency: 'gold', baseSpeed: 12.5, goldMultiplier: 1.12, upgradeBase: 190 },
+  { id: 'flying-dutchman', classId: 'derive-double', name: 'Flying Dutchman', price: 5000, currency: 'gold', baseSpeed: 15, goldMultiplier: 1.16, upgradeBase: 260 },
 
   { id: 'catsport-hobie16', classId: 'catsport', name: 'Hobie 16', price: 800, currency: 'gold', baseSpeed: 12, goldMultiplier: 1.08, upgradeBase: 60 },
   { id: 'catsport-dart18', classId: 'catsport', name: 'Dart 18', price: 1600, currency: 'gold', baseSpeed: 15, goldMultiplier: 1.1, upgradeBase: 110 },

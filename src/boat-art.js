@@ -6,7 +6,10 @@
 // groups: `structure` (hull/foils/rig — fixed color) and `sails` (fabric or
 // wing — hue-rotated live based on upgrade investment, see ui.js).
 export const BOAT_ART = {
-  derive: {
+  // Generic two-hander dinghy (main + jib) — used by Zef/Vaurien/420/470/
+  // Flying Dutchman, none of which have a distinctive enough silhouette
+  // (for this scale of drawing) to earn their own override.
+  'derive-double': {
     structure: `
       <path class="hull" d="M20 68 Q50 82 80 68 L74 78 Q50 90 26 78 Z" />
       <rect class="mast" x="49" y="18" width="2" height="46" />
@@ -14,6 +17,19 @@ export const BOAT_ART = {
     sails: `
       <path class="sail sail-main" d="M50 18 L50 62 L28 62 Z" />
       <path class="sail sail-jib" d="M50 24 L50 62 L68 62 Z" />
+    `,
+  },
+
+  // Fallback for solo dinghies without their own override — every current
+  // one (Optimist, Europe, Laser x2, Finn) has its own entry below, so
+  // this is mostly a safety net.
+  'derive-solo': {
+    structure: `
+      <path class="hull" d="M18 76 Q35 66 78 68 L78 80 Q45 88 18 76 Z" />
+      <rect class="mast" x="38" y="14" width="2" height="50" />
+    `,
+    sails: `
+      <path class="sail sail-main" d="M39 14 L39 64 L71 64 Z" />
     `,
   },
 
@@ -176,10 +192,33 @@ export const BOAT_ART_OVERRIDES = {
       <path class="sail sail-main" d="M39 22 L39 64 L64 64 Z" />
     `,
   },
+  // Europe: shorter and beamier than a Laser, with a flatter transom —
+  // a lighter, more modest single sail to match its gentler performance.
+  europe: {
+    structure: `
+      <path class="hull" d="M22 74 Q38 65 76 68 L76 79 Q46 86 22 74 Z" />
+      <ellipse class="cockpit" cx="54" cy="76" rx="5" ry="2" />
+      <rect class="mast" x="40" y="18" width="2" height="46" />
+    `,
+    sails: `
+      <path class="sail sail-main" d="M41 18 L41 62 L67 62 Z" />
+    `,
+  },
+  // Finn: the heaviest, beamiest hull of the solo dinghies (built for
+  // large sailors) carrying the biggest single sail of the group.
+  finn: {
+    structure: `
+      <path class="hull" d="M16 70 Q50 86 84 70 L77 82 Q50 92 23 82 Z" />
+      <rect class="mast" x="49" y="8" width="2.5" height="58" />
+    `,
+    sails: `
+      <path class="sail sail-main" d="M50 8 L50 64 L20 64 Z" />
+    `,
+  },
 };
 
 export function boatArtMarkup(classId, boatId, scale = 1) {
-  const art = BOAT_ART_OVERRIDES[boatId] ?? BOAT_ART[classId] ?? BOAT_ART.derive;
+  const art = BOAT_ART_OVERRIDES[boatId] ?? BOAT_ART[classId] ?? BOAT_ART['derive-double'];
   return `
     <g transform="translate(50 50) scale(${scale}) translate(-50 -50)">
       <g class="boat-structure">${art.structure}</g>
