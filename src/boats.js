@@ -86,9 +86,9 @@ export const BOAT_CLASSES = [
 // gem-priced boats still get a sane gold cost for their upgrade ladder.
 export const BOATS = [
   { id: 'optimist', classId: 'derive', name: 'Optimist', price: 0, currency: 'gold', baseSpeed: 4, goldMultiplier: 1.0, upgradeBase: 40 },
-  { id: 'laser-radial', classId: 'derive', name: 'Laser Radial', price: 250, currency: 'gold', baseSpeed: 6.5, goldMultiplier: 1.02, upgradeBase: 50 },
-  { id: 'laser', classId: 'derive', name: 'Laser Standard', price: 600, currency: 'gold', baseSpeed: 9, goldMultiplier: 1.05, upgradeBase: 60 },
-  { id: '420', classId: 'derive', name: '420', price: 1200, currency: 'gold', baseSpeed: 11.5, goldMultiplier: 1.075, upgradeBase: 85 },
+  { id: '420', classId: 'derive', name: '420', price: 250, currency: 'gold', baseSpeed: 7, goldMultiplier: 1.02, upgradeBase: 50 },
+  { id: 'laser-radial', classId: 'derive', name: 'Laser Radial', price: 600, currency: 'gold', baseSpeed: 9.5, goldMultiplier: 1.05, upgradeBase: 60 },
+  { id: 'laser', classId: 'derive', name: 'Laser Standard', price: 1200, currency: 'gold', baseSpeed: 12, goldMultiplier: 1.075, upgradeBase: 85 },
   { id: '470', classId: 'derive', name: '470', price: 2400, currency: 'gold', baseSpeed: 14, goldMultiplier: 1.1, upgradeBase: 120 },
 
   { id: 'catsport-hobie16', classId: 'catsport', name: 'Hobie 16', price: 800, currency: 'gold', baseSpeed: 12, goldMultiplier: 1.08, upgradeBase: 60 },
