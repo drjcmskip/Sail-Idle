@@ -66,7 +66,7 @@ let currentState = null;
 let regattaPhase = 'idle';
 let regattaResultsTimer = null;
 let selectedTrims = {};
-let renderedBoatClassId = null;
+let renderedBoatId = null;
 let boatFlashTimer = null;
 
 export function flashBoat() {
@@ -356,9 +356,14 @@ export function render(state, now) {
   const upgrades = state.boatUpgrades[state.activeBoatId];
   els.activeBoatName.textContent = activeBoat.name;
 
-  if (activeBoat.classId !== renderedBoatClassId) {
-    els.boat.innerHTML = boatArtMarkup(activeBoat.classId);
-    renderedBoatClassId = activeBoat.classId;
+  if (activeBoat.id !== renderedBoatId) {
+    // A bigger/pricier boat within the same class is drawn a touch larger,
+    // so buying a new one is visibly different even when it shares its
+    // class's silhouette (e.g. the three Half-Tonners).
+    const tierIndex = getBoatsByClass(activeBoat.classId).findIndex((b) => b.id === activeBoat.id);
+    const scale = 0.88 + tierIndex * 0.12;
+    els.boat.innerHTML = boatArtMarkup(activeBoat.classId, activeBoat.id, scale);
+    renderedBoatId = activeBoat.id;
   }
   const sailsGroup = els.boat.querySelector('.boat-sails');
   if (sailsGroup) {
@@ -407,4 +412,6 @@ export function bindActions(handlers) {
   }
 
   renderShopOnce(handlers.onBuyGemPack);
+
+  document.getElementById('reset-btn').addEventListener('click', handlers.onReset);
 }

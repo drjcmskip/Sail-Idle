@@ -1,4 +1,4 @@
-import { loadState, saveState } from './state.js';
+import { loadState, saveState, resetState } from './state.js';
 import * as Game from './game.js';
 import * as UI from './ui.js';
 import { formatDuration } from './format.js';
@@ -101,18 +101,34 @@ UI.bindActions({
     saveState(state);
     UI.playRegatta(result);
   },
+  onReset: () => {
+    if (!window.confirm('Réinitialiser toute votre progression (flotte, or, réputation) ? Cette action est irréversible.')) return;
+    resetting = true;
+    resetState();
+    window.location.reload();
+  },
 });
+
+// Guards every autosave path below: onReset clears localStorage and
+// reloads, but the old page's beforeunload/visibilitychange would
+// otherwise fire during that reload and silently re-save the stale
+// in-memory state right after it was cleared.
+let resetting = false;
 
 function loop() {
   const now = Date.now();
   Game.tick(state, now);
   UI.render(state, now);
-  requestAnimationFrame(loop);
+  if (!resetting) requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
-setInterval(() => saveState(state), 5000);
+setInterval(() => {
+  if (!resetting) saveState(state);
+}, 5000);
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') saveState(state);
+  if (!resetting && document.visibilityState === 'hidden') saveState(state);
 });
-window.addEventListener('beforeunload', () => saveState(state));
+window.addEventListener('beforeunload', () => {
+  if (!resetting) saveState(state);
+});

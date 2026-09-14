@@ -40,3 +40,11 @@ export function saveState(state) {
     // storage unavailable (private mode, quota) — progress just won't persist
   }
 }
+
+export function resetState() {
+  try {
+    localStorage.removeItem(SAVE_KEY);
+  } catch {
+    // storage unavailable — nothing to clear
+  }
+}

@@ -1,7 +1,10 @@
-// One hand-drawn silhouette per boat class, not per boat — boats within a
-// class share it but differ in stats. Each entry has two SVG groups:
-// `structure` (hull/foils/rig — fixed color) and `sails` (fabric or wing —
-// hue-rotated live based on upgrade investment, see ui.js).
+// One hand-drawn silhouette per boat class by default, shared by the boats
+// in it — but a few boats are visually distinctive enough in real life
+// (an Optimist's pram hull and gaff rig look nothing like a Laser's, even
+// though both are "Dériveur") that they get their own entry in
+// BOAT_ART_OVERRIDES instead, keyed by boat id. Each entry has two SVG
+// groups: `structure` (hull/foils/rig — fixed color) and `sails` (fabric or
+// wing — hue-rotated live based on upgrade investment, see ui.js).
 export const BOAT_ART = {
   derive: {
     structure: `
@@ -121,10 +124,38 @@ export const BOAT_ART = {
   },
 };
 
-export function boatArtMarkup(classId) {
-  const art = BOAT_ART[classId] ?? BOAT_ART.derive;
+// Optimist: boxy pram hull (flat bow *and* stern, unlike every other
+// pointed hull here), single gaff-rigged sail — no jib, it's a catboat.
+// Laser: same sleek dinghy hull as the rest of the class, but also a
+// single sail with no jib (it's a singlehander like the Optimist).
+export const BOAT_ART_OVERRIDES = {
+  optimist: {
+    structure: `
+      <path class="hull" d="M23 70 Q23 84 35 84 L65 84 Q77 84 77 70 Z" />
+      <rect class="mast" x="49" y="26" width="2" height="44" />
+    `,
+    sails: `
+      <path class="spar" d="M50 27 L33 32" />
+      <path class="sail sail-main" d="M50 27 L33 32 L29 68 L50 68 Z" />
+    `,
+  },
+  laser: {
+    structure: `
+      <path class="hull" d="M20 68 Q50 82 80 68 L74 78 Q50 90 26 78 Z" />
+      <rect class="mast" x="49" y="14" width="2" height="52" />
+    `,
+    sails: `
+      <path class="sail sail-main" d="M50 14 L50 62 L22 62 Z" />
+    `,
+  },
+};
+
+export function boatArtMarkup(classId, boatId, scale = 1) {
+  const art = BOAT_ART_OVERRIDES[boatId] ?? BOAT_ART[classId] ?? BOAT_ART.derive;
   return `
-    <g class="boat-structure">${art.structure}</g>
-    <g class="boat-sails">${art.sails}</g>
+    <g transform="translate(50 50) scale(${scale}) translate(-50 -50)">
+      <g class="boat-structure">${art.structure}</g>
+      <g class="boat-sails">${art.sails}</g>
+    </g>
   `;
 }

@@ -192,6 +192,7 @@ body {
 .foil-strut { stroke: var(--sand); stroke-width: 2.5; fill: none; stroke-linecap: round; }
 .crossbeam { fill: var(--text-dim); opacity: 0.5; }
 .waterline { stroke: var(--text-dim); stroke-width: 1; opacity: 0.3; }
+.spar { stroke: #2b2320; stroke-width: 1.5; fill: none; }
 
 .scene-info {
   position: relative;
@@ -521,6 +522,41 @@ body {
 .shop-card-price {
   font-size: 13px;
   color: var(--text-dim);
+}
+
+.danger-zone {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(244, 241, 222, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.reset-btn {
+  appearance: none;
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  background: none;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 10px 16px;
+  touch-action: manipulation;
+}
+
+.reset-btn:active {
+  background: rgba(224, 114, 74, 0.15);
+}
+
+.reset-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 0;
+  max-width: 260px;
 }
 
 .regatta-intro {
