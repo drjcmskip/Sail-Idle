@@ -9,6 +9,7 @@ const els = {
   gems: document.getElementById('gems'),
   reputation: document.getElementById('reputation'),
   distance: document.getElementById('distance'),
+  distanceGoal: document.getElementById('distance-goal'),
   speed: document.getElementById('speed'),
   windArrow: document.getElementById('wind-arrow'),
   windSpeed: document.getElementById('wind-speed'),
@@ -171,6 +172,7 @@ export function render(state, now) {
   els.gems.textContent = formatNumber(state.gems);
   els.reputation.textContent = formatNumber(state.reputation);
   els.distance.textContent = formatNumber(state.distance);
+  els.distanceGoal.textContent = formatNumber(Game.prestigeThreshold(state));
   els.speed.textContent = Game.currentSpeedKn(state, now).toFixed(1);
 
   const wind = Game.windMultiplier(now);

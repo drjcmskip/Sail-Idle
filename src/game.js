@@ -16,8 +16,16 @@ export const BOOST_COOLDOWN_MS = 5_000;
 // still translate into a satisfying idle pace instead of hours per upgrade.
 export const HOURS_PER_REAL_SECOND = 1;
 
-export const PRESTIGE_THRESHOLD_NM = 2000;
+// The distance needed for a prestige rises with reputation already banked,
+// so each "new season" takes meaningfully longer than the last instead of
+// settling into a flat, ever-faster button-mash once boats get quick.
+export const PRESTIGE_BASE_THRESHOLD_NM = 2000;
+export const PRESTIGE_THRESHOLD_GROWTH = 0.2;
 export const OFFLINE_CAP_MS = 8 * 60 * 60 * 1000;
+
+export function prestigeThreshold(state) {
+  return PRESTIGE_BASE_THRESHOLD_NM * (1 + state.reputation * PRESTIGE_THRESHOLD_GROWTH);
+}
 
 export function sailCost(boat, level) {
   return Math.floor(boat.upgradeBase * Math.pow(1.15, level - 1));
@@ -89,7 +97,7 @@ export function applyOfflineProgress(state) {
 }
 
 export function canPrestige(state) {
-  return state.distance >= PRESTIGE_THRESHOLD_NM;
+  return state.distance >= prestigeThreshold(state);
 }
 
 export function reputationGain(state) {
