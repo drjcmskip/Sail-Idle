@@ -21,52 +21,88 @@
         <span class="stat-value" id="gold">0</span>
       </div>
       <div class="stat">
+        <span class="stat-label">Gemmes</span>
+        <span class="stat-value stat-gems" id="gems">0</span>
+      </div>
+      <div class="stat">
         <span class="stat-label">Réputation</span>
         <span class="stat-value" id="reputation">0</span>
       </div>
     </header>
 
-    <main class="scene" id="boat-tap-target">
-      <div class="wind" id="wind">
-        <span class="wind-arrow" id="wind-arrow">➤</span>
-        <span id="wind-speed">0 kn</span>
-      </div>
+    <div class="view" id="view-sea">
+      <main class="scene" id="boat-tap-target">
+        <div class="wind" id="wind">
+          <span class="wind-arrow" id="wind-arrow">➤</span>
+          <span id="wind-speed">0 kn</span>
+        </div>
 
-      <svg class="boat" id="boat" viewBox="0 0 100 100" aria-hidden="true">
-        <path class="sail sail-main" d="M50 18 L50 62 L28 62 Z" />
-        <path class="sail sail-jib" d="M50 24 L50 62 L68 62 Z" />
-        <rect class="mast" x="49" y="18" width="2" height="46" />
-        <path class="hull" d="M20 68 Q50 82 80 68 L74 78 Q50 90 26 78 Z" />
-      </svg>
+        <svg class="boat" id="boat" viewBox="0 0 100 100" aria-hidden="true">
+          <path class="sail sail-main" d="M50 18 L50 62 L28 62 Z" />
+          <path class="sail sail-jib" d="M50 24 L50 62 L68 62 Z" />
+          <rect class="mast" x="49" y="18" width="2" height="46" />
+          <path class="hull" d="M20 68 Q50 82 80 68 L74 78 Q50 90 26 78 Z" />
+        </svg>
 
-      <div class="scene-info">
-        <div>Distance saison&nbsp;: <span id="distance">0</span> nm</div>
-        <div>Vitesse&nbsp;: <span id="speed">0</span> kn</div>
-        <div class="tap-hint" id="boost-hint">Touchez le bateau pour un coup de vent</div>
-      </div>
-    </main>
+        <div class="scene-info">
+          <div>Distance saison&nbsp;: <span id="distance">0</span> nm</div>
+          <div>Vitesse&nbsp;: <span id="speed">0</span> kn</div>
+          <div class="tap-hint" id="boost-hint">Touchez le bateau pour un coup de vent</div>
+        </div>
+      </main>
 
-    <section class="upgrades">
-      <button class="upgrade-card" id="buy-sail">
-        <div class="upgrade-title">Voiles <span id="sail-level">1</span></div>
-        <div class="upgrade-desc">+vitesse</div>
-        <div class="upgrade-cost"><span id="sail-cost">0</span> or</div>
+      <section class="active-boat-card">
+        <div class="active-boat-name" id="active-boat-name">Optimist Club</div>
+        <div class="upgrades">
+          <button class="upgrade-card" id="buy-sail">
+            <div class="upgrade-title">Voiles <span id="sail-level">1</span></div>
+            <div class="upgrade-desc">+vitesse</div>
+            <div class="upgrade-cost"><span id="sail-cost">0</span> or</div>
+          </button>
+          <button class="upgrade-card" id="buy-electronics">
+            <div class="upgrade-title">Électronique <span id="electronics-level">1</span></div>
+            <div class="upgrade-desc">+gains d'or</div>
+            <div class="upgrade-cost"><span id="electronics-cost">0</span> or</div>
+          </button>
+          <button class="upgrade-card" id="buy-crew">
+            <div class="upgrade-title">Équipage <span id="crew-level">0</span></div>
+            <div class="upgrade-desc">+vitesse &amp; or</div>
+            <div class="upgrade-cost"><span id="crew-cost">0</span> or</div>
+          </button>
+        </div>
+      </section>
+
+      <button class="prestige-btn" id="prestige-btn" hidden>
+        Nouvelle saison — <span id="prestige-gain">+0</span> réputation
       </button>
-      <button class="upgrade-card" id="buy-hull">
-        <div class="upgrade-title">Coque <span id="hull-level">1</span></div>
-        <div class="upgrade-desc">+gains d'or</div>
-        <div class="upgrade-cost"><span id="hull-cost">0</span> or</div>
-      </button>
-      <button class="upgrade-card" id="buy-crew">
-        <div class="upgrade-title">Équipage <span id="crew-level">0</span></div>
-        <div class="upgrade-desc">+vitesse &amp; or</div>
-        <div class="upgrade-cost"><span id="crew-cost">0</span> or</div>
-      </button>
-    </section>
+    </div>
 
-    <button class="prestige-btn" id="prestige-btn" hidden>
-      Nouvelle saison — <span id="prestige-gain">+0</span> réputation
-    </button>
+    <div class="view" id="view-garage" hidden>
+      <div class="garage-list" id="garage-list"></div>
+    </div>
+
+    <div class="view" id="view-shop" hidden>
+      <p class="shop-note">
+        Boutique en euros — la connexion au moyen de paiement n'est pas encore configurée,
+        les achats sont donc désactivés pour le moment.
+      </p>
+      <div class="shop-list" id="shop-list"></div>
+    </div>
+
+    <nav class="tabbar">
+      <button class="tab-btn is-active" data-view="sea">
+        <span class="tab-icon">⛵</span>
+        <span class="tab-label">Mer</span>
+      </button>
+      <button class="tab-btn" data-view="garage">
+        <span class="tab-icon">🚤</span>
+        <span class="tab-label">Bateaux</span>
+      </button>
+      <button class="tab-btn" data-view="shop">
+        <span class="tab-icon">💎</span>
+        <span class="tab-label">Boutique</span>
+      </button>
+    </nav>
   </div>
 
   <div class="toast" id="toast" hidden></div>

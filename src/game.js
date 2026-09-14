@@ -1,9 +1,10 @@
-export const BASE_SPEED_KN = 3;
+import { getBoat, getClass, isClassUnlocked } from './boats.js';
+
 export const SAIL_SPEED_PER_LEVEL = 0.6;
 export const CREW_SPEED_PER_LEVEL = 0.3;
 
 export const GOLD_PER_NM = 2;
-export const HULL_GOLD_BONUS = 0.02;
+export const ELECTRONICS_GOLD_BONUS = 0.02;
 export const CREW_GOLD_BONUS = 0.01;
 export const REPUTATION_GOLD_BONUS = 0.02;
 
@@ -18,16 +19,16 @@ export const HOURS_PER_REAL_SECOND = 1;
 export const PRESTIGE_THRESHOLD_NM = 2000;
 export const OFFLINE_CAP_MS = 8 * 60 * 60 * 1000;
 
-export function sailCost(level) {
-  return Math.floor(50 * Math.pow(1.15, level - 1));
+export function sailCost(boat, level) {
+  return Math.floor(boat.upgradeBase * Math.pow(1.15, level - 1));
 }
 
-export function hullCost(level) {
-  return Math.floor(40 * Math.pow(1.18, level - 1));
+export function electronicsCost(boat, level) {
+  return Math.floor(boat.upgradeBase * 1.1 * Math.pow(1.16, level - 1));
 }
 
-export function crewCost(level) {
-  return Math.floor(80 * Math.pow(1.2, level));
+export function crewCost(boat, level) {
+  return Math.floor(boat.upgradeBase * 1.6 * Math.pow(1.18, level));
 }
 
 // Smooth pseudo-random wind: two overlapping sine waves so it drifts
@@ -36,17 +37,26 @@ export function windMultiplier(now) {
   return 1 + 0.3 * Math.sin(now / 15000) + 0.15 * Math.sin(now / 4700 + 1.3);
 }
 
+function activeBoatAndUpgrades(state) {
+  const boat = getBoat(state.activeBoatId);
+  const upgrades = state.boatUpgrades[state.activeBoatId];
+  return { boat, upgrades };
+}
+
 export function currentSpeedKn(state, now) {
-  let speed = BASE_SPEED_KN + state.sailLevel * SAIL_SPEED_PER_LEVEL + state.crewLevel * CREW_SPEED_PER_LEVEL;
+  const { boat, upgrades } = activeBoatAndUpgrades(state);
+  let speed = boat.baseSpeed + upgrades.sailLevel * SAIL_SPEED_PER_LEVEL + upgrades.crewLevel * CREW_SPEED_PER_LEVEL;
   speed *= windMultiplier(now);
   if (now < state.boostUntil) speed *= BOOST_MULTIPLIER;
   return Math.max(0.5, speed);
 }
 
 export function goldMultiplier(state) {
+  const { boat, upgrades } = activeBoatAndUpgrades(state);
   return (
-    (1 + state.hullLevel * HULL_GOLD_BONUS) *
-    (1 + state.crewLevel * CREW_GOLD_BONUS) *
+    boat.goldMultiplier *
+    (1 + upgrades.electronicsLevel * ELECTRONICS_GOLD_BONUS) *
+    (1 + upgrades.crewLevel * CREW_GOLD_BONUS) *
     (1 + state.reputation * REPUTATION_GOLD_BONUS)
   );
 }
@@ -86,27 +96,30 @@ export function reputationGain(state) {
   return Math.max(1, Math.floor(Math.sqrt(state.distance / 50)));
 }
 
-export function buySail(state) {
-  const cost = sailCost(state.sailLevel);
+export function buySailUpgrade(state) {
+  const { boat, upgrades } = activeBoatAndUpgrades(state);
+  const cost = sailCost(boat, upgrades.sailLevel);
   if (state.gold < cost) return false;
   state.gold -= cost;
-  state.sailLevel += 1;
+  upgrades.sailLevel += 1;
   return true;
 }
 
-export function buyHull(state) {
-  const cost = hullCost(state.hullLevel);
+export function buyElectronicsUpgrade(state) {
+  const { boat, upgrades } = activeBoatAndUpgrades(state);
+  const cost = electronicsCost(boat, upgrades.electronicsLevel);
   if (state.gold < cost) return false;
   state.gold -= cost;
-  state.hullLevel += 1;
+  upgrades.electronicsLevel += 1;
   return true;
 }
 
-export function buyCrew(state) {
-  const cost = crewCost(state.crewLevel);
+export function buyCrewUpgrade(state) {
+  const { boat, upgrades } = activeBoatAndUpgrades(state);
+  const cost = crewCost(boat, upgrades.crewLevel);
   if (state.gold < cost) return false;
   state.gold -= cost;
-  state.crewLevel += 1;
+  upgrades.crewLevel += 1;
   return true;
 }
 
@@ -117,14 +130,39 @@ export function startBoost(state, now) {
   return true;
 }
 
+// Boats and their upgrades are a permanent fleet investment: prestige only
+// resets this season's currency/distance, not the boats you paid for.
 export function prestige(state) {
   if (!canPrestige(state)) return 0;
   const gain = reputationGain(state);
   state.reputation += gain;
   state.gold = 0;
   state.distance = 0;
-  state.sailLevel = 1;
-  state.hullLevel = 1;
-  state.crewLevel = 0;
   return gain;
+}
+
+export function buyBoat(state, boatId) {
+  const boat = getBoat(boatId);
+  if (!boat) return { ok: false, reason: 'unknown' };
+  if (state.ownedBoats.includes(boatId)) return { ok: false, reason: 'owned' };
+
+  const boatClass = getClass(boat.classId);
+  if (!isClassUnlocked(boatClass.id, state.reputation)) return { ok: false, reason: 'locked' };
+
+  const balance = boat.currency === 'gems' ? state.gems : state.gold;
+  if (balance < boat.price) return { ok: false, reason: 'funds' };
+
+  if (boat.currency === 'gems') state.gems -= boat.price;
+  else state.gold -= boat.price;
+
+  state.ownedBoats.push(boatId);
+  state.boatUpgrades[boatId] = { sailLevel: 1, electronicsLevel: 1, crewLevel: 0 };
+  state.activeBoatId = boatId;
+  return { ok: true };
+}
+
+export function selectBoat(state, boatId) {
+  if (!state.ownedBoats.includes(boatId)) return false;
+  state.activeBoatId = boatId;
+  return true;
 }
