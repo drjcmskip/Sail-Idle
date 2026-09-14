@@ -30,15 +30,28 @@ export const BOAT_ART = {
     `,
   },
 
-  halfton: {
+  catsport: {
     structure: `
-      <path class="hull" d="M16 66 Q50 84 84 66 L77 79 Q50 92 23 79 Z" />
-      <rect class="cabin" x="40" y="56" width="20" height="11" rx="2.5" />
+      <rect class="crossbeam" x="24" y="68" width="52" height="3" />
+      <path class="hull-second" d="M20 66 Q28 78 36 66 L33 78 Q28 84 23 78 Z" />
+      <path class="hull-second" d="M64 66 Q72 78 80 66 L77 78 Q72 84 67 78 Z" />
+      <rect class="mast" x="49" y="12" width="2" height="54" />
+    `,
+    sails: `
+      <path class="sail sail-main" d="M50 12 L50 60 L26 60 Z" />
+      <path class="sail sail-jib" d="M50 20 L50 60 L70 60 Z" />
+    `,
+  },
+
+  foilers: {
+    structure: `
+      <path class="foil-strut" d="M50 78 L50 94" />
+      <path class="foil" d="M32 92 L68 92 L61 97 L39 97 Z" />
+      <path class="hull" d="M28 68 Q50 74 72 68 L66 78 Q50 81 34 78 Z" />
       <rect class="mast" x="49" y="10" width="2" height="56" />
     `,
     sails: `
-      <path class="sail sail-main" d="M50 10 L50 60 L24 60 Z" />
-      <path class="sail sail-jib" d="M50 18 L50 60 L72 60 Z" />
+      <path class="sail sail-main" d="M50 10 L50 60 L26 60 Z" />
     `,
   },
 

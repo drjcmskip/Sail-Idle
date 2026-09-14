@@ -189,8 +189,8 @@ body {
 .ballast { fill: #2b2320; opacity: 0.5; }
 .cockpit { fill: #2b2320; opacity: 0.35; }
 .rudder { fill: #2b2320; opacity: 0.6; }
-.foil { fill: var(--text-dim); opacity: 0.8; }
-.foil-strut { stroke: var(--sand); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+.foil { fill: var(--sand); opacity: 0.95; }
+.foil-strut { stroke: var(--sand); stroke-width: 3; fill: none; stroke-linecap: round; }
 .crossbeam { fill: var(--text-dim); opacity: 0.5; }
 .waterline { stroke: var(--text-dim); stroke-width: 1; opacity: 0.3; }
 .spar { stroke: #2b2320; stroke-width: 1.5; fill: none; }
