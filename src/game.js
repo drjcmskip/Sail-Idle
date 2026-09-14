@@ -20,8 +20,8 @@ export const HOURS_PER_REAL_SECOND = 0.5;
 // The distance needed for a prestige rises with reputation already banked,
 // so each "new season" takes meaningfully longer than the last instead of
 // settling into a flat, ever-faster button-mash once boats get quick.
-export const PRESTIGE_BASE_THRESHOLD_NM = 2000;
-export const PRESTIGE_THRESHOLD_GROWTH = 0.2;
+export const PRESTIGE_BASE_THRESHOLD_NM = 3500;
+export const PRESTIGE_THRESHOLD_GROWTH = 0.35;
 export const OFFLINE_CAP_MS = 8 * 60 * 60 * 1000;
 
 export function prestigeThreshold(state) {
@@ -102,7 +102,7 @@ export function canPrestige(state) {
 }
 
 export function reputationGain(state) {
-  return Math.max(1, Math.floor(Math.sqrt(state.distance / 50)));
+  return Math.max(1, Math.floor(Math.sqrt(state.distance / 90)));
 }
 
 export function buySailUpgrade(state) {

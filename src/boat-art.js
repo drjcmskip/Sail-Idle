@@ -126,8 +126,10 @@ export const BOAT_ART = {
 
 // Optimist: boxy pram hull (flat bow *and* stern, unlike every other
 // pointed hull here), single gaff-rigged sail — no jib, it's a catboat.
-// Laser: same sleek dinghy hull as the rest of the class, but also a
-// single sail with no jib (it's a singlehander like the Optimist).
+// Laser: distinct from the generic curved-both-ends dinghy hull used
+// elsewhere — a Laser has a pointed bow but a near-straight sheerline and
+// a flat transom stern, plus a mast stepped well forward (cat rig) rather
+// than centered, with a single sail booming out aft of it.
 export const BOAT_ART_OVERRIDES = {
   optimist: {
     structure: `
@@ -141,11 +143,24 @@ export const BOAT_ART_OVERRIDES = {
   },
   laser: {
     structure: `
-      <path class="hull" d="M20 68 Q50 82 80 68 L74 78 Q50 90 26 78 Z" />
-      <rect class="mast" x="49" y="14" width="2" height="52" />
+      <path class="hull" d="M18 76 Q35 66 78 68 L78 80 Q45 88 18 76 Z" />
+      <ellipse class="cockpit" cx="52" cy="78" rx="6" ry="2.5" />
+      <rect class="mast" x="38" y="14" width="2" height="50" />
     `,
     sails: `
-      <path class="sail sail-main" d="M50 14 L50 62 L22 62 Z" />
+      <path class="sail sail-main" d="M39 14 L39 64 L71 64 Z" />
+    `,
+  },
+  // Same hull as the standard Laser — the Radial is the same boat with a
+  // shorter, smaller-area sail for lighter crews.
+  'laser-radial': {
+    structure: `
+      <path class="hull" d="M18 76 Q35 66 78 68 L78 80 Q45 88 18 76 Z" />
+      <ellipse class="cockpit" cx="52" cy="78" rx="6" ry="2.5" />
+      <rect class="mast" x="38" y="22" width="2" height="42" />
+    `,
+    sails: `
+      <path class="sail sail-main" d="M39 22 L39 64 L64 64 Z" />
     `,
   },
 };

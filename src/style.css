@@ -187,6 +187,7 @@ body {
 .hull-second { fill: var(--sand); opacity: 0.85; }
 .cabin { fill: #2b2320; opacity: 0.55; }
 .ballast { fill: #2b2320; opacity: 0.5; }
+.cockpit { fill: #2b2320; opacity: 0.35; }
 .rudder { fill: #2b2320; opacity: 0.6; }
 .foil { fill: var(--text-dim); opacity: 0.8; }
 .foil-strut { stroke: var(--sand); stroke-width: 2.5; fill: none; stroke-linecap: round; }
