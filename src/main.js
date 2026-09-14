@@ -47,9 +47,21 @@ const BUY_BOAT_FAILURE_MESSAGES = {
 };
 
 UI.bindActions({
-  onBuySail: () => Game.buySailUpgrade(state) && saveState(state),
-  onBuyElectronics: () => Game.buyElectronicsUpgrade(state) && saveState(state),
-  onBuyCrew: () => Game.buyCrewUpgrade(state) && saveState(state),
+  onBuySail: () => {
+    if (!Game.buySailUpgrade(state)) return;
+    saveState(state);
+    UI.flashBoat();
+  },
+  onBuyElectronics: () => {
+    if (!Game.buyElectronicsUpgrade(state)) return;
+    saveState(state);
+    UI.flashBoat();
+  },
+  onBuyCrew: () => {
+    if (!Game.buyCrewUpgrade(state)) return;
+    saveState(state);
+    UI.flashBoat();
+  },
   onBoatTap: () => {
     if (Game.startBoost(state, Date.now())) saveState(state);
   },
@@ -64,6 +76,7 @@ UI.bindActions({
     const result = Game.buyBoat(state, boatId);
     if (result.ok) {
       saveState(state);
+      UI.flashBoat();
     } else {
       UI.showToast(BUY_BOAT_FAILURE_MESSAGES[result.reason] ?? 'Achat impossible.');
     }

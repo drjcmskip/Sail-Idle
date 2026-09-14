@@ -5,6 +5,7 @@ import { GEM_PACKS } from './shop.js';
 import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
 import * as Regatta from './regatta.js';
 import { ALLURES, TRIM_OPTIONS } from './sailing.js';
+import { boatArtMarkup } from './boat-art.js';
 
 const els = {
   gold: document.getElementById('gold'),
@@ -65,6 +66,18 @@ let currentState = null;
 let regattaPhase = 'idle';
 let regattaResultsTimer = null;
 let selectedTrims = {};
+let renderedBoatClassId = null;
+let boatFlashTimer = null;
+
+export function flashBoat() {
+  els.boat.classList.remove('boat-flash');
+  // Force reflow so re-adding the class restarts the animation even if a
+  // previous flash is still finishing (e.g. rapid-fire upgrade purchases).
+  void els.boat.offsetWidth;
+  els.boat.classList.add('boat-flash');
+  clearTimeout(boatFlashTimer);
+  boatFlashTimer = setTimeout(() => els.boat.classList.remove('boat-flash'), 650);
+}
 
 export function showToast(message) {
   els.toast.textContent = message;
@@ -342,6 +355,16 @@ export function render(state, now) {
   const activeBoat = getBoat(state.activeBoatId);
   const upgrades = state.boatUpgrades[state.activeBoatId];
   els.activeBoatName.textContent = activeBoat.name;
+
+  if (activeBoat.classId !== renderedBoatClassId) {
+    els.boat.innerHTML = boatArtMarkup(activeBoat.classId);
+    renderedBoatClassId = activeBoat.classId;
+  }
+  const sailsGroup = els.boat.querySelector('.boat-sails');
+  if (sailsGroup) {
+    const levelScore = upgrades.sailLevel + upgrades.electronicsLevel + upgrades.crewLevel;
+    sailsGroup.style.filter = `hue-rotate(${Math.min(90, levelScore * 3)}deg)`;
+  }
 
   const sailCost = Game.sailCost(activeBoat, upgrades.sailLevel);
   els.sailLevel.textContent = upgrades.sailLevel;

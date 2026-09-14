@@ -165,10 +165,33 @@ body {
   50% { transform: translateY(-8px) rotate(1.5deg); }
 }
 
+.boat.boat-flash {
+  animation: bob 2.4s ease-in-out infinite, boat-flash-anim 0.6s ease;
+}
+
+@keyframes boat-flash-anim {
+  0% { filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.25)) brightness(1) saturate(1); transform: scale(1); }
+  35% { filter: drop-shadow(0 8px 16px rgba(244, 162, 89, 0.6)) brightness(1.5) saturate(1.6); transform: scale(1.12); }
+  100% { filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.25)) brightness(1) saturate(1); transform: scale(1); }
+}
+
+.boat-sails {
+  transition: filter 0.4s ease;
+}
+
 .sail-main { fill: var(--accent); }
 .sail-jib { fill: var(--accent-soft); }
+.wingsail { fill: var(--accent); }
 .mast { fill: #2b2320; }
 .hull { fill: var(--sand); }
+.hull-second { fill: var(--sand); opacity: 0.85; }
+.cabin { fill: #2b2320; opacity: 0.55; }
+.ballast { fill: #2b2320; opacity: 0.5; }
+.rudder { fill: #2b2320; opacity: 0.6; }
+.foil { fill: var(--text-dim); opacity: 0.8; }
+.foil-strut { stroke: var(--sand); stroke-width: 2.5; fill: none; stroke-linecap: round; }
+.crossbeam { fill: var(--text-dim); opacity: 0.5; }
+.waterline { stroke: var(--text-dim); stroke-width: 1; opacity: 0.3; }
 
 .scene-info {
   position: relative;

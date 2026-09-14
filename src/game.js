@@ -12,9 +12,10 @@ export const BOOST_MULTIPLIER = 1.5;
 export const BOOST_DURATION_MS = 10_000;
 export const BOOST_COOLDOWN_MS = 5_000;
 
-// 1 real second = 1 sailing hour, so real nautical speeds (a few knots)
-// still translate into a satisfying idle pace instead of hours per upgrade.
-export const HOURS_PER_REAL_SECOND = 1;
+// 1 real second = 0.5 sailing hour, so real nautical speeds (a few knots)
+// still translate into a satisfying idle pace instead of hours per upgrade,
+// without the early game flying by in seconds.
+export const HOURS_PER_REAL_SECOND = 0.5;
 
 // The distance needed for a prestige rises with reputation already banked,
 // so each "new season" takes meaningfully longer than the last instead of
