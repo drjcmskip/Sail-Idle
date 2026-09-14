@@ -4,6 +4,7 @@ import * as UI from './ui.js';
 import { formatDuration } from './format.js';
 import { GEM_PACKS } from './shop.js';
 import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
+import * as Regatta from './regatta.js';
 
 const state = loadState();
 
@@ -80,6 +81,12 @@ UI.bindActions({
     url.searchParams.set('client_reference_id', state.playerId);
     saveState(state);
     window.location.href = url.toString();
+  },
+  onStartRegatta: () => {
+    const result = Regatta.startRegatta(state, Date.now());
+    if (!result) return;
+    saveState(state);
+    UI.playRegatta(result);
   },
 });
 

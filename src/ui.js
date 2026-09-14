@@ -3,6 +3,7 @@ import * as Game from './game.js';
 import { BOAT_CLASSES, getBoat, getBoatsByClass, isClassUnlocked } from './boats.js';
 import { GEM_PACKS } from './shop.js';
 import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
+import * as Regatta from './regatta.js';
 
 const els = {
   gold: document.getElementById('gold'),
@@ -37,11 +38,18 @@ const els = {
   views: {
     sea: document.getElementById('view-sea'),
     garage: document.getElementById('view-garage'),
+    regatta: document.getElementById('view-regatta'),
     shop: document.getElementById('view-shop'),
   },
   tabButtons: Array.from(document.querySelectorAll('.tab-btn')),
   garageList: document.getElementById('garage-list'),
   shopList: document.getElementById('shop-list'),
+
+  regattaIntro: document.getElementById('regatta-intro'),
+  regattaStartBtn: document.getElementById('regatta-start-btn'),
+  regattaCooldown: document.getElementById('regatta-cooldown'),
+  regattaRace: document.getElementById('regatta-race'),
+  regattaResults: document.getElementById('regatta-results'),
 };
 
 let toastTimer = null;
@@ -49,6 +57,8 @@ let currentView = 'sea';
 let lastGarageRender = 0;
 let boatActionHandlers = null;
 let currentState = null;
+let regattaPhase = 'idle';
+let regattaResultsTimer = null;
 
 export function showToast(message) {
   els.toast.textContent = message;
@@ -70,6 +80,7 @@ export function switchView(view) {
     btn.classList.toggle('is-active', btn.dataset.view === view);
   }
   if (view === 'garage') renderGarage(currentState, true);
+  if (view === 'regatta' && regattaPhase === 'idle') renderRegattaIdle(currentState, Date.now());
 }
 
 function currencyIcon(currency) {
@@ -165,6 +176,84 @@ function renderShopOnce(onBuyGemPack) {
   });
 }
 
+function renderRegattaIdle(state, now) {
+  if (!state) return;
+  const canStart = Regatta.canStartRegatta(state, now);
+  els.regattaStartBtn.disabled = !canStart;
+  if (canStart) {
+    els.regattaCooldown.hidden = true;
+  } else {
+    const remaining = Math.ceil(Regatta.regattaCooldownRemainingMs(state, now) / 1000);
+    els.regattaCooldown.hidden = false;
+    els.regattaCooldown.textContent = `Prochaine régate dans ${remaining}s`;
+  }
+}
+
+export function playRegatta(result) {
+  regattaPhase = 'racing';
+  els.regattaIntro.hidden = true;
+  els.regattaResults.hidden = true;
+  els.regattaRace.hidden = false;
+  els.regattaRace.innerHTML = '';
+
+  const markers = result.racers.map((racer) => {
+    const lane = document.createElement('div');
+    lane.className = 'regatta-lane' + (racer.id === 'player' ? ' regatta-lane-player' : '');
+    lane.innerHTML = `
+      <div class="regatta-lane-name">${racer.name}</div>
+      <div class="regatta-track"><span class="regatta-marker">⛵</span></div>
+    `;
+    els.regattaRace.appendChild(lane);
+    return lane.querySelector('.regatta-marker');
+  });
+
+  // Two rAFs so the browser paints the marker at left:0 first, then the
+  // transition to the target position actually animates instead of jumping.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      result.racers.forEach((racer, i) => {
+        markers[i].style.transition = `left ${racer.animationMs}ms linear`;
+        markers[i].style.left = '90%';
+      });
+    });
+  });
+
+  const maxDuration = Math.max(...result.racers.map((r) => r.animationMs));
+  clearTimeout(regattaResultsTimer);
+  regattaResultsTimer = setTimeout(() => showRegattaResults(result), maxDuration + 300);
+}
+
+function showRegattaResults(result) {
+  regattaPhase = 'results';
+  els.regattaRace.hidden = true;
+  els.regattaResults.hidden = false;
+
+  const standings = result.racers
+    .map(
+      (racer, i) => `
+      <div class="regatta-standing-row ${racer.id === 'player' ? 'regatta-standing-player' : ''}">
+        <span class="regatta-standing-rank">${i + 1}</span>
+        <span class="regatta-standing-name">${racer.name}</span>
+      </div>
+    `
+    )
+    .join('');
+
+  els.regattaResults.innerHTML = `
+    <div class="regatta-result-headline">${result.rank === 1 ? '🏆 Victoire !' : `${result.rank}e place sur ${result.totalRacers}`}</div>
+    <div class="regatta-standings">${standings}</div>
+    <div class="regatta-reward">+${formatNumber(result.goldReward)} or${result.gemsReward ? ` · +${result.gemsReward} 💎` : ''}</div>
+    <button class="regatta-start-btn" id="regatta-again-btn">Retour</button>
+  `;
+
+  document.getElementById('regatta-again-btn').addEventListener('click', () => {
+    regattaPhase = 'idle';
+    els.regattaResults.hidden = true;
+    els.regattaIntro.hidden = false;
+    renderRegattaIdle(currentState, Date.now());
+  });
+}
+
 export function render(state, now) {
   currentState = state;
 
@@ -215,6 +304,7 @@ export function render(state, now) {
   }
 
   if (currentView === 'garage') renderGarage(state);
+  if (currentView === 'regatta' && regattaPhase === 'idle') renderRegattaIdle(state, now);
 }
 
 export function bindActions(handlers) {
@@ -223,6 +313,7 @@ export function bindActions(handlers) {
   els.buyCrew.addEventListener('click', handlers.onBuyCrew);
   els.prestigeBtn.addEventListener('click', handlers.onPrestige);
   document.getElementById('boat-tap-target').addEventListener('click', handlers.onBoatTap);
+  els.regattaStartBtn.addEventListener('click', handlers.onStartRegatta);
 
   boatActionHandlers = { onBuyBoat: handlers.onBuyBoat, onSelectBoat: handlers.onSelectBoat };
 

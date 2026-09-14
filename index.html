@@ -89,6 +89,19 @@
       <div class="shop-list" id="shop-list"></div>
     </div>
 
+    <div class="view" id="view-regatta" hidden>
+      <div class="regatta-intro" id="regatta-intro">
+        <p class="regatta-desc">
+          Affrontez 5 adversaires IA sur un sprint. La récompense dépend de votre
+          vitesse actuelle et de votre classement.
+        </p>
+        <button class="regatta-start-btn" id="regatta-start-btn">Démarrer une régate</button>
+        <div class="regatta-cooldown" id="regatta-cooldown" hidden></div>
+      </div>
+      <div class="regatta-race" id="regatta-race" hidden></div>
+      <div class="regatta-results" id="regatta-results" hidden></div>
+    </div>
+
     <nav class="tabbar">
       <button class="tab-btn is-active" data-view="sea">
         <span class="tab-icon">⛵</span>
@@ -97,6 +110,10 @@
       <button class="tab-btn" data-view="garage">
         <span class="tab-icon">🚤</span>
         <span class="tab-label">Bateaux</span>
+      </button>
+      <button class="tab-btn" data-view="regatta">
+        <span class="tab-icon">🏆</span>
+        <span class="tab-label">Régates</span>
       </button>
       <button class="tab-btn" data-view="shop">
         <span class="tab-icon">💎</span>
