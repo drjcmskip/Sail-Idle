@@ -82,8 +82,8 @@ UI.bindActions({
     saveState(state);
     window.location.href = url.toString();
   },
-  onStartRegatta: () => {
-    const result = Regatta.startRegatta(state, Date.now());
+  onStartRegatta: (trims) => {
+    const result = Regatta.startRegatta(state, Date.now(), trims);
     if (!result) return;
     saveState(state);
     UI.playRegatta(result);

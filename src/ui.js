@@ -4,6 +4,7 @@ import { BOAT_CLASSES, getBoat, getBoatsByClass, isClassUnlocked } from './boats
 import { GEM_PACKS } from './shop.js';
 import { STRIPE_PAYMENT_LINKS } from './stripe-config.js';
 import * as Regatta from './regatta.js';
+import { ALLURES, TRIM_OPTIONS } from './sailing.js';
 
 const els = {
   gold: document.getElementById('gold'),
@@ -48,6 +49,10 @@ const els = {
   regattaIntro: document.getElementById('regatta-intro'),
   regattaStartBtn: document.getElementById('regatta-start-btn'),
   regattaCooldown: document.getElementById('regatta-cooldown'),
+  regattaTrimSetup: document.getElementById('regatta-trim-setup'),
+  regattaWindInfo: document.getElementById('regatta-wind-info'),
+  regattaLegs: document.getElementById('regatta-legs'),
+  regattaGoBtn: document.getElementById('regatta-go-btn'),
   regattaRace: document.getElementById('regatta-race'),
   regattaResults: document.getElementById('regatta-results'),
 };
@@ -59,6 +64,7 @@ let boatActionHandlers = null;
 let currentState = null;
 let regattaPhase = 'idle';
 let regattaResultsTimer = null;
+let selectedTrims = {};
 
 export function showToast(message) {
   els.toast.textContent = message;
@@ -189,9 +195,50 @@ function renderRegattaIdle(state, now) {
   }
 }
 
+function buildTrimLegs() {
+  els.regattaLegs.innerHTML = ALLURES.map(
+    (allure) => `
+      <div class="regatta-leg">
+        <div class="regatta-leg-header">
+          <span class="regatta-leg-name">${allure.name}</span>
+          <span class="regatta-leg-desc">${allure.description}</span>
+        </div>
+        <div class="regatta-trim-options">
+          ${TRIM_OPTIONS.map(
+            (trim) => `
+              <button
+                class="regatta-trim-btn ${selectedTrims[allure.id] === trim.id ? 'is-selected' : ''}"
+                data-allure="${allure.id}" data-trim="${trim.id}"
+              >${trim.label}</button>
+            `
+          ).join('')}
+        </div>
+      </div>
+    `
+  ).join('');
+
+  els.regattaLegs.querySelectorAll('.regatta-trim-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      selectedTrims[btn.dataset.allure] = btn.dataset.trim;
+      buildTrimLegs();
+    });
+  });
+}
+
+function openTrimSetup(state, now) {
+  regattaPhase = 'trim-setup';
+  selectedTrims = Object.fromEntries(ALLURES.map((a) => [a.id, 'milieu']));
+  els.regattaIntro.hidden = true;
+  els.regattaTrimSetup.hidden = false;
+
+  const wind = Game.windMultiplier(now);
+  els.regattaWindInfo.textContent = `Vent actuel : ${(wind * 10).toFixed(0)} kn`;
+  buildTrimLegs();
+}
+
 export function playRegatta(result) {
   regattaPhase = 'racing';
-  els.regattaIntro.hidden = true;
+  els.regattaTrimSetup.hidden = true;
   els.regattaResults.hidden = true;
   els.regattaRace.hidden = false;
   els.regattaRace.innerHTML = '';
@@ -239,9 +286,23 @@ function showRegattaResults(result) {
     )
     .join('');
 
+  const TRIM_FEEDBACK = ['✅ Optimal', '➖ Correct', '❌ À revoir'];
+  const trimFeedback = result.trimLegs
+    .map((leg) => {
+      const allure = ALLURES.find((a) => a.id === leg.allureId);
+      return `
+        <div class="regatta-trim-feedback-row">
+          <span>${allure.name}</span>
+          <span>${TRIM_FEEDBACK[leg.diff]}</span>
+        </div>
+      `;
+    })
+    .join('');
+
   els.regattaResults.innerHTML = `
     <div class="regatta-result-headline">${result.rank === 1 ? '🏆 Victoire !' : `${result.rank}e place sur ${result.totalRacers}`}</div>
     <div class="regatta-standings">${standings}</div>
+    <div class="regatta-trim-feedback">${trimFeedback}</div>
     <div class="regatta-reward">+${formatNumber(result.goldReward)} or${result.gemsReward ? ` · +${result.gemsReward} 💎` : ''}</div>
     <button class="regatta-start-btn" id="regatta-again-btn">Retour</button>
   `;
@@ -313,7 +374,8 @@ export function bindActions(handlers) {
   els.buyCrew.addEventListener('click', handlers.onBuyCrew);
   els.prestigeBtn.addEventListener('click', handlers.onPrestige);
   document.getElementById('boat-tap-target').addEventListener('click', handlers.onBoatTap);
-  els.regattaStartBtn.addEventListener('click', handlers.onStartRegatta);
+  els.regattaStartBtn.addEventListener('click', () => openTrimSetup(currentState, Date.now()));
+  els.regattaGoBtn.addEventListener('click', () => handlers.onStartRegatta(selectedTrims));
 
   boatActionHandlers = { onBuyBoat: handlers.onBuyBoat, onSelectBoat: handlers.onSelectBoat };
 

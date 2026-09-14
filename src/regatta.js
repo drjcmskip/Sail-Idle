@@ -1,4 +1,5 @@
-import { currentSpeedKn, goldMultiplier, GOLD_PER_NM } from './game.js';
+import { currentSpeedKn, goldMultiplier, windMultiplier, GOLD_PER_NM } from './game.js';
+import { raceTrimMultiplier } from './sailing.js';
 
 export const REGATTA_COOLDOWN_MS = 90_000;
 export const REGATTA_OPPONENT_COUNT = 5;
@@ -26,20 +27,30 @@ export function regattaCooldownRemainingMs(state, now) {
 // Resolves the whole race immediately (gold/gems credited, cooldown started)
 // and returns everything the UI needs to *animate* the reveal afterwards —
 // the animation is purely presentational, not a source of truth.
-export function startRegatta(state, now) {
+//
+// `trimsByAllure` is the player's sail trim choice for each leg of the
+// triangle course (see sailing.js), picked before the race starts. It only
+// affects the player's own speed relative to their untrimmed baseline — AI
+// opponents' own trim skill is already folded into their ±30% variance —
+// so good trim is a genuine, skill-based edge rather than free bonus gold.
+export function startRegatta(state, now, trimsByAllure) {
   if (!canStartRegatta(state, now)) return null;
 
-  const playerSpeed = currentSpeedKn(state, now);
+  const baseSpeed = currentSpeedKn(state, now);
+  const crewLevel = state.boatUpgrades[state.activeBoatId]?.crewLevel ?? 0;
+  const trimResult = raceTrimMultiplier(trimsByAllure, windMultiplier(now), crewLevel);
+  const playerSpeed = baseSpeed * trimResult.overall;
+
   const racers = [{ id: 'player', name: 'Vous', speed: playerSpeed }];
   for (let i = 0; i < REGATTA_OPPONENT_COUNT; i++) {
-    racers.push({ id: `ai-${i}`, name: AI_NAMES[i % AI_NAMES.length], speed: playerSpeed * randomBetween(0.7, 1.3) });
+    racers.push({ id: `ai-${i}`, name: AI_NAMES[i % AI_NAMES.length], speed: baseSpeed * randomBetween(0.7, 1.3) });
   }
   racers.sort((a, b) => b.speed - a.speed);
 
   const rank = racers.findIndex((r) => r.id === 'player') + 1;
   const placementIndex = Math.min(rank - 1, PLACEMENT_GOLD_MULTIPLIER.length - 1);
 
-  const goldPerSecond = playerSpeed * GOLD_PER_NM * goldMultiplier(state);
+  const goldPerSecond = baseSpeed * GOLD_PER_NM * goldMultiplier(state);
   const goldReward = Math.max(1, Math.round(goldPerSecond * REGATTA_REWARD_SECONDS * PLACEMENT_GOLD_MULTIPLIER[placementIndex]));
   const gemsReward = PLACEMENT_GEMS[placementIndex];
 
@@ -53,5 +64,5 @@ export function startRegatta(state, now) {
     animationMs: Math.round(REGATTA_MIN_ANIMATION_MS * (fastestSpeed / r.speed)),
   }));
 
-  return { racers: racersWithTiming, rank, totalRacers: racers.length, goldReward, gemsReward };
+  return { racers: racersWithTiming, rank, totalRacers: racers.length, goldReward, gemsReward, trimLegs: trimResult.legs };
 }
